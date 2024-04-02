@@ -1,20 +1,37 @@
 version: '3.6'
 services:
   gitlab:
-    image: gitlab/gitlab-ee:<version>-ee.0
+    image: gitlab/gitlab-ce:16.10.0-ce.0
     container_name: gitlab
     restart: always
-    hostname: 'gitlab.example.com'
+    hostname: 'localhost'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         # Add any other gitlab.rb configuration here, each on its own line
-        external_url 'https://gitlab.example.com'
+        external_url 'http://localhost'
+        gitlab_rails['ldap_enabled'] = true
+        gitlab_rails['ldap_servers'] = {
+          'main' => {
+            'label' => 'LDAP',
+            'host' =>  'openldap',
+            'port' => 389,
+            'verify_certificates' => false,
+            'uid' => 'uid',
+            'encryption' => 'plain',
+            'base' => 'ou=people,dc=example,dc=org',
+            'bind_dn' => 'cn=admin,dc=example,dc=org',
+            'password' => 'admin',
+            'tls_options' => {
+              'ssl_version' => 'TLSv1_2'
+            }
+          }
+        }
     ports:
       - '80:80'
       - '443:443'
       - '22:22'
     volumes:
-      - '$GITLAB_HOME/config:/etc/gitlab'
-      - '$GITLAB_HOME/logs:/var/log/gitlab'
-      - '$GITLAB_HOME/data:/var/opt/gitlab'
+      - '~/config:/etc/gitlab'
+      - '~/logs:/var/log/gitlab'
+      - '~/data:/var/opt/gitlab'
     shm_size: '256m'
