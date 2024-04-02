@@ -26,3 +26,25 @@ services:
       - openldap
     depends_on:
       - openldap
+  phpwebmanagement:
+    container_name: phpwebmanagement
+    image: wheelybird/ldap-user-manager:v1.11
+    ports:
+      - "10080:80"
+      - "10443:443"
+    environment:
+      - SERVER_HOSTNAME=localhost
+      - LDAP_URI=ldap://openldap
+      - LDAP_BASE_DN=dc=example,dc=org
+      - LDAP_REQUIRE_STARTTLS=FALSE
+      - LDAP_ADMINS_GROUP=admins
+      - LDAP_ADMIN_BIND_DN=cn=admin,dc=example,dc=org
+      - LDAP_ADMIN_BIND_PWD=admin
+      - LDAP_IGNORE_CERT_ERRORS=true
+      - EMAIL_DOMAIN=ldapusermanager.org
+    links:
+      - openldap
+    depends_on:
+      - openldap
+# Hole-88-among-laying
+# stanley-Dictator-tightly-43
