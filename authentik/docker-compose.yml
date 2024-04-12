@@ -1,6 +1,3 @@
----
-version: "3.4"
-
 services:
   postgresql:
     image: docker.io/library/postgres:12-alpine
@@ -11,10 +8,14 @@ services:
       interval: 30s
       retries: 5
       timeout: 5s
+    volumes:
+      - ./storage/postgres:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: ${PG_PASS:-authentik}
+      POSTGRES_PASSWORD: ${PG_PASS:?database password required}
       POSTGRES_USER: ${PG_USER:-authentik}
       POSTGRES_DB: ${PG_DB:-authentik}
+    env_file:
+      - .env
   redis:
     image: docker.io/library/redis:alpine
     command: --save 60 1 --loglevel warning
@@ -25,6 +26,8 @@ services:
       interval: 30s
       retries: 5
       timeout: 3s
+    volumes:
+      - ./storage/redis:/data
   server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.2.2}
     restart: unless-stopped
@@ -34,11 +37,15 @@ services:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-authentik}
-      AUTHENTIK_SECRET_KEY: aaaa
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+    volumes:
+      - ./storage/authentik/media:/media
+      - ./storage/authentik/custom-templates:/templates
+    env_file:
+      - .env
     ports:
-      - "${COMPOSE_PORT_HTTP:-19000}:9000"
-      - "${COMPOSE_PORT_HTTPS:-19443}:9443"
+      - "${COMPOSE_PORT_HTTP:-9000}:9000"
+      - "${COMPOSE_PORT_HTTPS:-9443}:9443"
     depends_on:
       - postgresql
       - redis
@@ -51,8 +58,7 @@ services:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-authentik}
-      AUTHENTIK_SECRET_KEY: aaaa
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
     # `user: root` and the docker socket volume are optional.
     # See more for the docker socket integration here:
     # https://goauthentik.io/docs/outposts/integrations/docker
@@ -60,12 +66,13 @@ services:
     # on the mounted folders, so when removing this make sure the folders have the correct UID/GID
     # (1000:1000 by default)
     user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./storage/authentik/media:/media
+      - ./storage/authentik/certs:/certs
+      - ./storage/authentik/custom-templates:/templates
+    env_file:
+      - .env
     depends_on:
       - postgresql
       - redis
-
-volumes:
-  database:
-    driver: local
-  redis:
-    driver: local

@@ -6,6 +6,8 @@ services:
       - POSTGRES_USER=codimd
       - POSTGRES_PASSWORD=change_password
       - POSTGRES_DB=codimd
+    volumes:
+      - "./storage/postgres:/var/lib/postgresql/data"
 
   codimd:
     image: nabo.codimd.dev/hackmdio/hackmd:2.1.0
@@ -16,3 +18,5 @@ services:
       - database
     ports:
       - "3000:3000"
+    volumes:
+      - ./storage/codimd/upload-data:/home/hackmd/app/public/uploads
