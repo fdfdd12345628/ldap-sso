@@ -14,37 +14,22 @@ services:
       - ~/ldap/config:/etc/openldap/slapd.d
       - ~/ldap/certs:/assets/slapd/certs
     command: [--copy-service,  --loglevel, debug]
-  phpldapadmin:
-    container_name: phpldapadmin
-    image: osixia/phpldapadmin:latest
-    ports:
-      - "8080:80"
-    environment:
-      - PHPLDAPADMIN_HTTPS="false"
-      - PHPLDAPADMIN_LDAP_HOSTS=openldap
-    links:
-      - openldap
-    depends_on:
-      - openldap
-  phpwebmanagement:
-    container_name: phpwebmanagement
-    image: wheelybird/ldap-user-manager:v1.11
-    ports:
-      - "10080:80"
-      - "10443:443"
-    environment:
-      - SERVER_HOSTNAME=localhost
-      - LDAP_URI=ldap://openldap
-      - LDAP_BASE_DN=dc=example,dc=org
-      - LDAP_REQUIRE_STARTTLS=FALSE
-      - LDAP_ADMINS_GROUP=admins
-      - LDAP_ADMIN_BIND_DN=cn=admin,dc=example,dc=org
-      - LDAP_ADMIN_BIND_PWD=admin
-      - LDAP_IGNORE_CERT_ERRORS=true
-      - EMAIL_DOMAIN=ldapusermanager.org
-    links:
-      - openldap
-    depends_on:
-      - openldap
-# Hole-88-among-laying
-# stanley-Dictator-tightly-43
+  ldap-ui:
+        image: dnknth/ldap-ui
+        ports:
+            - 127.0.0.1:5000:5000
+        links:
+          - openldap
+        environment:
+            LDAP_URL: "${LDAP_URL:-ldap://openldap/}"
+            USE_TLS: ${USE_TLS:-}
+            INSECURE_TLS: ${INSECURE_TLS:-}
+            BASE_DN: "${BASE_DN:-dc=example,dc=org}"
+            BIND_DN: "${BIND_DN:-cn=admin,dc=example,dc=org}"
+            BIND_PASSWORD: "${BIND_PASSWORD:-admin}"
+        restart: unless-stopped
+        healthcheck:
+            test: "wget -q -O /dev/null http://localhost:5000"
+            interval: 30s
+            retries: 2
+            timeout: 2s
