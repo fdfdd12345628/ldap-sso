@@ -14,7 +14,7 @@ services:
     networks:
       - web_service
     volumes:
-      - ./nginx_secrets:/etc/letsencrypt
+      - ./storage/nginx_secrets:/etc/letsencrypt
       - ./user_conf.d:/etc/nginx/user_conf.d
 
 networks:
