@@ -8,6 +8,9 @@ services:
       GITLAB_OMNIBUS_CONFIG: |
         # Add any other gitlab.rb configuration here, each on its own line
         external_url 'http://localhost'
+        nginx['enable'] = true
+        nginx['listen_port'] = 9180
+        nginx['listen_https'] = false
         gitlab_rails['ldap_enabled'] = true
         gitlab_rails['ldap_servers'] = {
           'main' => {
@@ -53,8 +56,6 @@ services:
           }
         ]
     ports:
-      - '80:80'
-      - '443:443'
       - '22:22'
     networks:
       - web_service
