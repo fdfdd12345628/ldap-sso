@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  nginx:
+    image: jonasal/nginx-certbot:latest
+    restart: unless-stopped
+    environment:
+      - CERTBOT_EMAIL
+    env_file:
+      - ./nginx-certbot.env
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - web_service
+    volumes:
+      - ./nginx_secrets:/etc/letsencrypt
+      - ./user_conf.d:/etc/nginx/user_conf.d
+
+networks:
+  web_service:
+    external: false
+    name: web_service
