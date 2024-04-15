@@ -9,7 +9,6 @@ services:
         # Add any other gitlab.rb configuration here, each on its own line
         external_url 'http://localhost'
         nginx['enable'] = true
-        nginx['listen_port'] = 9180
         nginx['listen_https'] = false
         gitlab_rails['ldap_enabled'] = true
         gitlab_rails['ldap_servers'] = {
@@ -64,3 +63,7 @@ services:
       - './storage/gitlab/logs:/var/log/gitlab'
       - './storage/gitlab/data:/var/opt/gitlab'
     shm_size: '256m'
+
+networks:
+  web_service:
+    external: true
