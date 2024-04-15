@@ -7,9 +7,7 @@ services:
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         # Add any other gitlab.rb configuration here, each on its own line
-        external_url 'http://localhost'
-        nginx['enable'] = true
-        nginx['listen_https'] = false
+        external_url 'https://localhost'
         gitlab_rails['ldap_enabled'] = true
         gitlab_rails['ldap_servers'] = {
           'main' => {
@@ -32,7 +30,7 @@ services:
         gitlab_rails['omniauth_sync_email_from_provider'] = 'saml'
         gitlab_rails['omniauth_sync_profile_from_provider'] = ['saml']
         gitlab_rails['omniauth_sync_profile_attributes'] = ['email']
-        gitlab_rails['omniauth_auto_sign_in_with_provider'] = 'saml'
+        # gitlab_rails['omniauth_auto_sign_in_with_provider'] = 'saml'
         gitlab_rails['omniauth_block_auto_created_users'] = false
         gitlab_rails['omniauth_auto_link_saml_user'] = true
         gitlab_rails['omniauth_providers'] = [
