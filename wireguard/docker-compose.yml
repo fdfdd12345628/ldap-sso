@@ -10,5 +10,5 @@ services:
       - "8888:8888"
     volumes:
       - /etc/wireguard:/etc/wireguard
-      - ./data:/app/data
+      - ./storage/data:/app/data
       - ./config:/app/config
