@@ -21,11 +21,10 @@ version: '2'
 
 services:
   # The container that runs XWiki in Tomcat, with the appropriate JDBC driver (for postgres).
-  web:
+  xwiki:
     image: "xwiki:${XWIKI_VERSION}-postgres-tomcat"
-    container_name: xwiki
     depends_on:
-      - db
+      - postgres
     # ports:
     #   - "8080:8080"
     # Default values defined in .env file.
@@ -35,17 +34,19 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE}
-      - DB_HOST=xwiki-postgres-db
+      - DB_HOST=postgres
     # Provide a name instead of an auto-generated id for xwiki data (the permanent directory in included in it)
     # configured in the Dockerfile, to make it simpler to identify in 'docker volume ls'.
     volumes:
       - xwiki-data:/usr/local/xwiki
     networks:
       - web_service
+      - xwiki_bridge
   # The container that runs the database (postgres)
-  db:
+  postgres:
     image: "postgres:16"
-    container_name: xwiki-postgres-db
+    networks:
+      - xwiki_bridge
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
@@ -58,6 +59,9 @@ services:
 volumes:
   postgres-data: {}
   xwiki-data: {}
+
 networks:
   web_service:
     external: true
+  xwiki_bridge:
+    driver: bridge
