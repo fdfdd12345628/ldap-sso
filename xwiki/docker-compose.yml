@@ -23,7 +23,7 @@ services:
   # The container that runs XWiki in Tomcat, with the appropriate JDBC driver (for postgres).
   web:
     image: "xwiki:${XWIKI_VERSION}-postgres-tomcat"
-    container_name: xwiki-postgres-tomcat-web
+    container_name: xwiki
     depends_on:
       - db
     # ports:
