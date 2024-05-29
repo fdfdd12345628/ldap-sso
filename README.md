@@ -9,6 +9,6 @@ A testing docker environment using LDAP as SSO
 
 ## Done
 
-1. Deploy gitlab, mattermost, codimd service
+1. Deploy gitlab, mattermost, codimd, xwiki service
 2. Deploy authentik and using LDAP as backend
 3. Deploy portainer to manage docker
