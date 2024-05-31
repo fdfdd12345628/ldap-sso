@@ -59,3 +59,8 @@ services:
 
       # additional settings
       - MM_SERVICESETTINGS_SITEURL
+    networks:
+      - web_service
+networks:
+  web_service:
+    external: true
