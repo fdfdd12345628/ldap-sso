@@ -51,8 +51,8 @@ services:
     image: caddy:2
     <<: *restart_policy
     command: "/usr/local/bin/proxy-entrypoint.sh"
-    ports:
-      - "${PORT:-8080}:80"
+    # ports:
+    #   - "${PORT:-8080}:80"
     environment:
       APP_HOST: web
     depends_on:
